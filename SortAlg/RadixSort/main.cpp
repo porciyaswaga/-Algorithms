@@ -10,27 +10,44 @@ struct Human {
 };
 
 
-void CountingSort(std::vector<Human>& A) {
-    int n = A[0].age;
-    std::vector<int> C(n + 1, 0);
+void CountingSortByDigit(std::vector<Human>& A, int exp) {
+    if (A.empty()) return;
+
+    const int BASE = 10; //десятичная система счисления
+    std::vector<int> C(BASE, 0);
     std::vector<Human> B(A.size());
-    for (const auto& human : A) {
-        if (human.age > n) {
-            n = human.age;
-        }
-    }
+
     for (int i = 0; i < A.size(); ++i) {
-        C[A[i].age]++; 
+        int digit = (A[i].age / exp) % BASE;
+        C[digit]++;
     }
-    for (int i = 1; i <= n; ++i) {
-        C[i] += C[i - 1];
+
+    for (int i = 1; i < BASE; ++i) {
+        C[i] = C[i] + C[i - 1];
     }
+
     for (int i = A.size() - 1; i >= 0; --i) {
-        B[C[A[i].age] - 1] = A[i];
-        C[A[i].age]--;
+        int digit = (A[i].age / exp) % BASE;
+        B[C[digit] - 1] = A[i];
+        C[digit]--;
     }
+
     for (int i = 0; i < B.size(); ++i) {
         A[i] = B[i];
+    }
+}
+
+void RadixSort(std::vector<Human>& data) {
+    if (data.empty()) return;
+
+    int maxAge = data[0].age;
+    for (const auto& human : data) {
+        if (human.age > maxAge) {
+            maxAge = human.age;
+        }
+    }
+    for (int exp = 1; maxAge / exp > 0; exp *= 10) {
+        CountingSortByDigit(data, exp);
     }
 }
 
@@ -59,7 +76,7 @@ int main() {
 
     std::cout << '\n';
     
-    CountingSort(data);
+    RadixSort(data);
 
     for (const auto& hum : data) {
         std::cout << "Name: " << hum.name << "; "

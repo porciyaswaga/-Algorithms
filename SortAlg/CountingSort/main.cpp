@@ -10,7 +10,6 @@ struct Human {
 };
 
 
-
 void CountingSort(std::vector<Human>& A) {
     int n = A[0].age;
     std::vector<int> C(n + 1, 0);
